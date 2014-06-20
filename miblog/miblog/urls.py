@@ -14,5 +14,7 @@ urlpatterns = patterns('',
 urlpatterns = patterns('blog.views',
 	(r"^entrada/(?P<pk>\d+)/$", "entrada"),
 	(r"^month/(\d+)/(\d+)/$", "month"),
+	(r"^poncomentario/(\d+)/$", "poncomentario"),
+	(r'^admin/', include(admin.site.urls)),
 	(r"", "main"),
 )

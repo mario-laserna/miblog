@@ -3,8 +3,33 @@ from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
 import time
 from calendar import month_name
+from django.forms import ModelForm
+from django.core.context_processors import csrf
+from django.http import HttpResponseRedirect
 
 from blog.models import *
+
+class FormularioComentario(ModelForm):
+	class Meta:
+		model = Comentario
+		exclude = ["identrada"]
+
+def poncomentario(request, pk):
+	p = request.POST
+	if 'mensaje' in p:
+		autor = "Anonimo"
+		if p["autor"]: autor = p["autor"]
+
+		comentario = Comentario(identrada = Entrada.objects.get(pk=pk))
+		cf = FormularioComentario(p, instance=comentario)
+		cf.fields['autor'].required = False
+
+		comentario = cf.save(commit=False)
+		comentario.autor = autor
+		comentario.save()
+
+	return HttpResponseRedirect(reverse("blog.views.entrada", args=[pk]))
+
 
 def mkmonth_lst():
 	if not Entrada.objects.count() : return []
@@ -33,7 +58,10 @@ def month(request, year, month):
 
 def entrada(request, pk):
 	identrada = Entrada.objects.get(pk=int(pk))
-	return render_to_response("entrada.html", dict(entrada=identrada, usuario=request.user))
+	comentario = Comentario.objects.filter(identrada=identrada)
+	d = dict(entrada=identrada, comentario=comentario, form=FormularioComentario, usuario=request.user)
+	d.update(csrf(request))
+	return render_to_response("entrada.html", d)
 
 
 def main(request):

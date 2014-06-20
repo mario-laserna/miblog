@@ -1,0 +1,30 @@
+{% extends "estructura.html" %}
+
+{% block contenido %}
+
+<article>
+	<a href="{% url 'blog.views.entrada' entrada.pk %}"><h3>{{entrada.titulo}}</h3></a>
+	<time>{{entrada.fecha}}</time>
+	<p>{{entrada.contenido}}</p>
+</article>
+
+{% if comentario %}
+	<p>Comentarios:</p>
+	{% for comentario in comentario%}
+		<ul>
+			<li>{{comentario.fechacreacion}} - {{comentario.autor}}</li>
+			<ul>
+				<li>{{comentario.mensaje|linebreaks}}</li>
+			</ul>
+		</ul>
+	{% endfor %}
+{% endif %}
+
+<form action="{% url 'blog.views.poncomentario' entrada.id %}" method="POST">
+	{% csrf_token %}
+	<p>Nombre: {{ form.autor }}</p>
+	<p>Mensaje: {{ form.mensaje|linebreaks }}</p>
+	<p><input type="submit" value="Enviar" /></p>
+</form>
+
+{% endblock %}
