@@ -1,0 +1,21 @@
+{% extends "estructura.html" %}
+
+{% block contenido %}
+{% for entrada in entrada.object_list %}
+<article>
+	<a href="{% url 'blog.views.entrada' entrada.pk %}"><h3>{{entrada.titulo}}</h3></a>
+	<time>{{entrada.fecha}}</time>
+	<p>{{entrada.contenido}}</p>
+</article>
+{% endfor %}
+
+<nav>
+	{% if entrada.has_previous %}
+		<a href="?page={{entrada.previous_page_number}}">Página Anterior</a>
+	{% endif %}
+	<p>Página {{entrada.number}} de {{entrada.paginator.num_pages}}</p>
+	{% if entrada.has_next %}
+		<a href="?page={{entrada.next_page_number}}">Página Siguiente</a>
+	{% endif %}
+</nav>
+{% endblock %}
